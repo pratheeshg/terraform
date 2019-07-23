@@ -16,7 +16,7 @@ resource "azurerm_resource_group" "main" {
 }
 
 resource "azurerm_public_ip" "main" {
-  name                    = "test-pip"
+  name                    = "nginx-pip"
   location                = azurerm_resource_group.main.location
   resource_group_name     = azurerm_resource_group.main.name
   allocation_method       = "Dynamic"
@@ -57,7 +57,7 @@ resource "azurerm_network_interface" "main" {
 }
 
 resource "azurerm_virtual_machine" "main" {
-  name                  = "${var.prefix}-vm"
+  name                  = "${var.prefix}-Nginx01"
   location              = azurerm_resource_group.main.location
   resource_group_name   = azurerm_resource_group.main.name
   network_interface_ids = [azurerm_network_interface.main.id]
@@ -87,6 +87,14 @@ resource "azurerm_virtual_machine" "main" {
     }
   }
   tags = {
-    environment = "staging"
+    environment = "Nginx01"
   }
+}
+data "azurerm_public_ip" "main" {
+  name                = "${azurerm_public_ip.main.name}"
+  resource_group_name = "${azurerm_virtual_machine.main.resource_group_name}"
+}
+
+output "public_ip_address" {
+  value = "${data.azurerm_public_ip.main.ip_address}"
 }
