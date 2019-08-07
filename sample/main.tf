@@ -55,6 +55,14 @@ resource "azurerm_network_interface" "main" {
     public_ip_address_id          = azurerm_public_ip.main.id
   }
 }
+data "azurerm_image" "search" {
+  name                = "MyNginx"
+  resource_group_name = "LMG-Terraform"
+}
+
+output "image_id" {
+  value = "/subscriptions/34832334-7ac1-45fb-96a4-0b49a18cf417/resourceGroups/LMG-terraform/providers/Microsoft.Compute/images/MyNginx"
+}
 
 resource "azurerm_virtual_machine" "main" {
   name                  = "${var.prefix}-Nginx01"
@@ -64,11 +72,8 @@ resource "azurerm_virtual_machine" "main" {
   vm_size               = "Standard_DS1_v2"
 
   storage_image_reference {
-    publisher = "OpenLogic"
-    offer     = "CentOS"
-    sku       = "7.6"
-    version   = "latest"
-  }
+     id = "${data.azurerm_image.search.id}"
+   }
   storage_os_disk {
     name              = "MyNginx"
     caching           = "ReadWrite"
